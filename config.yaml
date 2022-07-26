@@ -1,0 +1,56 @@
+brokerMsg:
+  name: rmq
+  rmq:
+    dsn: amqp://guest:guest@localhost:5672
+    exchanger: test
+    routingKey: user
+    preferQueueName: test.user # optional. How was called queue
+
+db:
+  host: 127.0.0.1
+  port: 5432
+  driverName: postgres
+  username: postgres
+  password: postgres
+  dbname: dbname
+  tableName: raw_users # in which table to write messages
+
+buffer:
+  name: redis
+  size: 1000 # buffers size
+  redis:
+    addr: 127.0.0.1:6379
+    idleTimeout: 60 # seconds
+    key: example.key
+
+settings:
+# Example
+#  {
+#    "token": "token",
+#    "user": {
+#      "id": 123,
+#      "name": "Name",
+#      "balance": 1.23,
+#      "animals": {
+#        "home":{
+#          "small": {
+#            "haveCat": false
+#          }
+#        }
+#      },
+#      "hobbies": {
+#        "priority": ["sleep", "lay"],
+#        "secondary": [12, 123]
+#      },
+#      "extra": "{\"favoriteFood\": \"beef with mash potato\", \"favoriteDrinks\": [\"coffee\", \"black tea\"]}"
+#    }
+#  }
+
+  # full queue field name: table field name
+  user.id: id                                             # int64
+  user.name: name                                         # string
+  user.balance: balance                                   # float
+  user.hobbies.priority: priority_hobby                   # slice
+  user.extra: extra                                       # json
+  user.animals.home.small.haveCat: have_cat               # bool
+
