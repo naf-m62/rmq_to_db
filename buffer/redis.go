@@ -57,19 +57,18 @@ func (r *redis) SaveBatchInFront(msgList [][]byte) (err error) {
 	var redisConn = r.client.Get()
 	defer redisConn.Close()
 
-	var msgListWithKey = make([]string, 0, len(msgList)+1)
+	var msgListWithKey = make([]interface{}, 0, len(msgList)+1)
 	msgListWithKey = append(msgListWithKey, r.config.Key)
 
 	for _, bytes := range msgList {
-		msgListWithKey = append(msgListWithKey, string(bytes))
+		msgListWithKey = append(msgListWithKey, bytes)
 	}
 
 	if _, err = redisLib.DoWithTimeout(
 		redisConn,
 		redisTimeout,
 		"LPUSH",
-		r.config.Key,
-		msgListWithKey,
+		msgListWithKey...,
 	); err != nil {
 		return errors.Wrap(err, "LPUSH error")
 	}
@@ -118,6 +117,9 @@ func (r *redis) GetAllValues() (msgList [][]byte, err error) {
 		var b []byte
 		if b, ok = k.([]byte); !ok {
 			return nil, errors.Wrap(ErrTypeAssertions, "can't convert to []byte")
+		}
+		if len(b) == 0 {
+			continue
 		}
 		msgList = append(msgList, b)
 	}

@@ -123,10 +123,10 @@ func (r *rmq) handler(ctx context.Context, wg *sync.WaitGroup, handler func(cont
 			return
 		case msg := <-d:
 			if err = handler(ctx, msg.Body); err != nil {
-				continue
+				err = nil
 			}
-			if err = msg.Ack(false); err != nil {
-				log.Println("ack error:", err, "MessageId:", msg.MessageId)
+			if errA := msg.Ack(false); errA != nil {
+				log.Println("ack error:", errA, "MessageId:", msg.MessageId)
 			}
 		}
 	}
